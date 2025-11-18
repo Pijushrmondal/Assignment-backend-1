@@ -1,29 +1,17 @@
-// /middlewares/validators/auth.validator.ts
 import { z } from "zod";
 
 export const loginSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(6),
+  email: z.string().email("Invalid email format"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
-export function validateLogin(req, res, next) {
-  const result = loginSchema.safeParse(req.body);
-  if (!result.success) {
-    return res.status(400).json({
-      success: false,
-      errors: result.error.flatten().fieldErrors,
-    });
-  }
-  req.validated = result.data;
-  next();
-}
-
-// /validators/auth.validator.ts
-import { z } from "zod";
-
-export const loginSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(6),
+export const signupSchema = z.object({
+  email: z.string().email("Invalid email format"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+  role: z.enum(["ADMIN", "EDITOR"], {
+    errorMap: () => ({ message: "Role must be either ADMIN or EDITOR" }),
+  }),
 });
 
 export type LoginInput = z.infer<typeof loginSchema>;
+export type SignupInput = z.infer<typeof signupSchema>;

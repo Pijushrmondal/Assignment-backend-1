@@ -52,6 +52,50 @@
 						"description": "Login with email and password. Returns JWT token.\n\n**Seeded Users:**\n- Admin: admin@example.com / admin123\n- Editor: editor@example.com / editor123"
 					},
 					"response": []
+				},
+				{
+					"name": "Signup",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const jsonData = pm.response.json();",
+									"    pm.environment.set(\"token\", jsonData.token);",
+									"    pm.environment.set(\"userId\", jsonData.user.id);",
+									"    pm.environment.set(\"userRole\", jsonData.user.role);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"newuser@example.com\",\n    \"password\": \"password123\",\n    \"role\": \"EDITOR\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/signup",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"signup"
+							]
+						},
+						"description": "Create a new user account.\n\n**Request Body:**\n```json\n{\n  \"email\": \"user@example.com\" (required),\n  \"password\": \"password123\" (required, min 6 characters),\n  \"role\": \"ADMIN\" | \"EDITOR\" (required)\n}\n```\n\n**Response:**\n```json\n{\n  \"token\": \"jwt-token\",\n  \"user\": {\n    \"id\": \"...\",\n    \"email\": \"user@example.com\",\n    \"role\": \"EDITOR\"\n  }\n}\n```\n\n**Errors:**\n- `USER_ALREADY_EXISTS`: Email already registered\n- `INVALID_INPUT`: Validation errors"
+					},
+					"response": []
 				}
 			]
 		},
@@ -143,6 +187,43 @@
 							]
 						},
 						"description": "Example: Search for screens containing 'lobby'"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Screen",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"New Display Screen\",\n    \"isActive\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/screens",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"screens"
+							]
+						},
+						"description": "Create a new screen.\n\n**Requirements:**\n- Requires EDITOR or ADMIN role\n- Requires authentication token\n\n**Request Body:**\n```json\n{\n  \"name\": \"Screen Name\" (required),\n  \"isActive\": true (optional, defaults to true)\n}\n```\n\n**Response (201):**\n```json\n{\n  \"_id\": \"...\",\n  \"name\": \"Screen Name\",\n  \"isActive\": true,\n  \"createdAt\": \"2024-01-01T00:00:00.000Z\",\n  \"updatedAt\": \"2024-01-01T00:00:00.000Z\"\n}\n```\n\n**Errors:**\n- `400` - Validation errors\n- `403` - Forbidden (requires EDITOR+ role)"
 					},
 					"response": []
 				},
