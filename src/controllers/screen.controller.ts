@@ -25,7 +25,7 @@ export const createScreen = async (req: Request, res: Response) => {
   }
 };
 
-export const getScreens = async (req: Request, res: Response) => {
+export const getScreens = async (req: Request, res: Response): Promise<void> => {
   try {
     const { search = "", page = 1, limit = 10 } = req.query;
 
@@ -52,13 +52,14 @@ export const getScreens = async (req: Request, res: Response) => {
   }
 };
 
-export const toggleScreen = async (req: Request, res: Response) => {
+export const toggleScreen = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
 
     const screen = await Screen.findById(id);
     if (!screen) {
-      return res.status(404).json({ error: "Screen not found" });
+      res.status(404).json({ error: "Screen not found" });
+      return;
     }
 
     screen.isActive = !screen.isActive;

@@ -2,35 +2,39 @@ import { Request, Response, NextFunction } from "express";
 
 export const errorHandler = (
   err: any,
-  req: Request,
+  _req: Request,
   res: Response,
-  next: NextFunction
-) => {
+  _next: NextFunction
+): void => {
   console.error("Error:", err);
 
   // Mongoose validation error
   if (err.name === "ValidationError") {
-    return res.status(400).json({
+    res.status(400).json({
       error: "VALIDATION_ERROR",
       details: err.errors,
     });
+    return;
   }
 
   // Mongoose duplicate key error
   if (err.code === 11000) {
-    return res.status(400).json({
+    res.status(400).json({
       error: "DUPLICATE_ERROR",
       message: "Resource already exists",
     });
+    return;
   }
 
   // JWT errors
   if (err.name === "JsonWebTokenError") {
-    return res.status(401).json({ error: "INVALID_TOKEN" });
+    res.status(401).json({ error: "INVALID_TOKEN" });
+    return;
   }
 
   if (err.name === "TokenExpiredError") {
-    return res.status(401).json({ error: "TOKEN_EXPIRED" });
+    res.status(401).json({ error: "TOKEN_EXPIRED" });
+    return;
   }
 
   // Default error

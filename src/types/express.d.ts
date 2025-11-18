@@ -1,7 +1,12 @@
-import { AuthRequest } from "../middlewares/auth.middleware";
-
 declare global {
   namespace Express {
-    interface Request extends AuthRequest {}
+    interface Request {
+      user?: {
+        id: string;
+        role: "ADMIN" | "EDITOR";
+      };
+    }
   }
 }
+
+export {};

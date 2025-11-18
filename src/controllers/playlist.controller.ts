@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { Playlist } from "../models/Playlist.model";
 
-export const getPlaylists = async (req: Request, res: Response) => {
+export const getPlaylists = async (req: Request, res: Response): Promise<void> => {
   try {
     const search = req.query.search ? String(req.query.search) : "";
     const page = Number(req.query.page) || 1;
@@ -31,7 +31,7 @@ export const getPlaylists = async (req: Request, res: Response) => {
   }
 };
 
-export const createPlaylist = async (req: Request, res: Response) => {
+export const createPlaylist = async (req: Request, res: Response): Promise<void> => {
   try {
     const { name, itemUrls = [] } = req.body;
 
@@ -48,7 +48,8 @@ export const createPlaylist = async (req: Request, res: Response) => {
     });
   } catch (error: any) {
     if (error.code === 11000) {
-      return res.status(400).json({ error: "Playlist name already exists" });
+      res.status(400).json({ error: "Playlist name already exists" });
+      return;
     }
     res.status(500).json({ error: "SERVER_ERROR" });
   }
