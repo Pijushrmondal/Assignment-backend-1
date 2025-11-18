@@ -1,0 +1,387 @@
+{
+	"info": {
+		"_postman_id": "screens-playlists-api",
+		"name": "Screens & Playlists API",
+		"description": "API collection for Screens & Playlists System",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const jsonData = pm.response.json();",
+									"    pm.environment.set(\"token\", jsonData.token);",
+									"    pm.environment.set(\"userId\", jsonData.user.id);",
+									"    pm.environment.set(\"userRole\", jsonData.user.role);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"admin@example.com\",\n    \"password\": \"admin123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						},
+						"description": "Login with email and password. Returns JWT token.\n\n**Seeded Users:**\n- Admin: admin@example.com / admin123\n- Editor: editor@example.com / editor123"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Screens",
+			"item": [
+				{
+					"name": "Get Screens",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/screens?search=&page=1&limit=10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"screens"
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "",
+									"description": "Case-insensitive search on name field"
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Page number (default: 1)"
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"description": "Items per page (default: 10)"
+								}
+							]
+						},
+						"description": "Get paginated list of screens with optional search.\n\n**Query Parameters:**\n- `search` (optional): Search term for screen name (case-insensitive)\n- `page` (optional): Page number (default: 1)\n- `limit` (optional): Items per page (default: 10)\n\n**Response:**\n```json\n{\n  \"items\": [...],\n  \"total\": 10,\n  \"page\": 1,\n  \"limit\": 10\n}\n```"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Screens - With Search",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/screens?search=lobby&page=1&limit=10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"screens"
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "lobby",
+									"description": "Search for screens with 'lobby' in name"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						},
+						"description": "Example: Search for screens containing 'lobby'"
+					},
+					"response": []
+				},
+				{
+					"name": "Toggle Screen Active Status",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/screens/:id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"screens",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "",
+									"description": "MongoDB ObjectId of the screen"
+								}
+							]
+						},
+						"description": "Toggle the `isActive` status of a screen.\n\n**Requirements:**\n- Requires EDITOR or ADMIN role\n- Provide screen ID in URL path\n\n**Response:**\n```json\n{\n  \"message\": \"Updated\",\n  \"isActive\": true\n}\n```"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Playlists",
+			"item": [
+				{
+					"name": "Get Playlists",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/playlists?search=&page=1&limit=10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"playlists"
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "",
+									"description": "Case-insensitive search on name field"
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Page number (default: 1)"
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"description": "Items per page (default: 10)"
+								}
+							]
+						},
+						"description": "Get paginated list of playlists with optional search.\n\n**Query Parameters:**\n- `search` (optional): Search term for playlist name (case-insensitive)\n- `page` (optional): Page number (default: 1)\n- `limit` (optional): Items per page (default: 10)\n\n**Response:**\n```json\n{\n  \"items\": [\n    {\n      \"_id\": \"...\",\n      \"name\": \"Playlist Name\",\n      \"itemCount\": 5\n    }\n  ],\n  \"total\": 10,\n  \"page\": 1,\n  \"limit\": 10\n}\n```"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Playlists - With Search",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/playlists?search=welcome&page=1&limit=10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"playlists"
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "welcome"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						},
+						"description": "Example: Search for playlists containing 'welcome'"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Playlist",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"My New Playlist\",\n    \"itemUrls\": [\n        \"https://example.com/video1.mp4\",\n        \"https://example.com/image1.jpg\",\n        \"https://example.com/video2.mp4\"\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/playlists",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"playlists"
+							]
+						},
+						"description": "Create a new playlist.\n\n**Request Body:**\n```json\n{\n  \"name\": \"Playlist Name\" (required),\n  \"itemUrls\": [\"url1\", \"url2\", ...] (optional, max 10 URLs)\n}\n```\n\n**Validation:**\n- `name`: Required, non-empty string\n- `itemUrls`: Optional array of valid URLs, maximum 10 items\n\n**Response:**\n```json\n{\n  \"_id\": \"...\",\n  \"name\": \"Playlist Name\",\n  \"itemCount\": 3\n}\n```"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Playlist - Empty URLs",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Empty Playlist\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/playlists",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"playlists"
+							]
+						},
+						"description": "Example: Create playlist without URLs (itemUrls is optional)"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:4000",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
+
